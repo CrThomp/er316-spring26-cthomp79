@@ -195,6 +195,12 @@ public class Patron {
             return false;
         }
     }
+    /**
+     * Sets the patron fines to a certain amount
+     */
+    public void setFines(double amount){
+        this.fines = amount;
+    }
 
     /**
      * Compares patrons based on patronId.
