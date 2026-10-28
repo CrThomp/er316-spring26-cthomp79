@@ -66,7 +66,15 @@ There is no fixed minimum number of test methods.
 |-|-|-|-|-:|-|
 |T1|`testBookAvailable`|D1|One available copy; registered eligible patron; no warnings|0.0|Available copies decrease by one; patron receives the book; checkout count becomes one|
 |T2|`testUnavailableBook`|D1|Available copies = 0; otherwise eligible registered patron|2.0|Book and patron remain unchanged|
-|T3||||||
+|T3|`testSuspendedPatron`|D2|Available copy >> 0; patron account suspended == true|1.0|No checkout created; book inventory unchanged|
+|T4|`testFineBelowLimit`|D3|Available copy; patron fine below threshold|0.0|Book checked out successfully|
+|T5|`testFineAtLimit`|D3|Available copy; patron fine equal to threshold|3.0|Book checked out successfully|
+|T6|`testFineAboveLimit`|D3|Available copy; patron fine above threshold|3.0|No checkout; patron and book objects unchanged|
+|T7|`testBelowCheckoutLimit`|D4|Patron (Faculty, Staff, Student, Public, Child) currently holds at least one fewer book than maximum|0.0|Checkout succeeds; checkout count increases|
+|T8|`testAtCheckoutLimit`|D4|Patron (Faculty, Staff, Student, Public, Child) currently holds maximum allowed books|4.0|Checkout rejected; book inventory unchanged|
+|T9|`testInvalidPatronID`|D5|Valid book; patronID not registered|1.0|No changes to book or patron records|
+|T10|`testSuccessfulCheckout`|D6|Book is available; Patron is valid; Patron isn't suspended; patron does not have outstanding fines|0.0|Inventory count, patron checkout history and checkout count changes|
+|T11|`testRejectedCheckout`|D7|Patron is suspended and attempts a checkout|1.0|No checkout record created; inventory left unchanged|
 
 ## Part 3: Defect evidence
 
