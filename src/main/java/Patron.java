@@ -197,7 +197,6 @@ public class Patron {
     }
     /**
      * Sets the patron fines to a certain amount
-     * @param double fine amount
      */
     public void setFines(double amount){
         this.fines = amount;

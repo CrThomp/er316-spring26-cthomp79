@@ -135,11 +135,17 @@ public class CheckoutBlackBoxSample {
      */
     @Test
     public void testSuspendedPatron(){
-        //initialize book and patron
-        Book book = new Book("Test Book", 1);
-        Patron patron = new Patron("John");
-        patron.setAccountSuspended(true);
+        checkout = createCheckout(checkoutClass);
 
+        // Setup: Create available book and eligible patron
+        Book book = new Book("978-0-123456-78-9", "Test Book",
+                "Test Author", Book.BookType.FICTION, 1);
+
+        Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                Patron.PatronType.STUDENT);
+
+        checkout.addBook(book); // adding the book to the library
+        checkout.registerPatron(patron); // adding a patrol to the system
         //attempt to checkout
         double result = checkout.checkoutBook(book, patron);
 
@@ -156,13 +162,17 @@ public class CheckoutBlackBoxSample {
      */
     @Test
     public void testFineBelowLimit(){
-        // Setup: Create unavailable book
+        checkout = createCheckout(checkoutClass);
+
+        // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
-                "Test Author", Book.BookType.FICTION, 5);
-        book.setAvailableCopies(1);  // We are pretending it has been checked out by others and is not available anymore
+                "Test Author", Book.BookType.FICTION, 1);
 
         Patron patron = new Patron("P001", "Test Patron", "test@example.com",
                 Patron.PatronType.STUDENT);
+
+        checkout.addBook(book); // adding the book to the library
+        checkout.registerPatron(patron); // adding a patrol to the system
         patron.setFines(0.0);
 
         double result = patron.getFineBalance();
@@ -178,12 +188,17 @@ public class CheckoutBlackBoxSample {
     @Test
     public void testFineAtLimit() {
         // Setup: Create unavailable book
+        checkout = createCheckout(checkoutClass);
+
+        // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
-                "Test Author", Book.BookType.FICTION, 5);
-        book.setAvailableCopies(1);  // We are pretending it has been checked out by others and is not available anymore
+                "Test Author", Book.BookType.FICTION, 1);
 
         Patron patron = new Patron("P001", "Test Patron", "test@example.com",
                 Patron.PatronType.STUDENT);
+
+        checkout.addBook(book); // adding the book to the library
+        checkout.registerPatron(patron); // adding a patrol to the system
         patron.setFines(25.0);
 
         double result = patron.getFineBalance();
@@ -201,12 +216,17 @@ public class CheckoutBlackBoxSample {
     @Test
     public void testFineAboveLimit() {
         // Setup: Create unavailable book
+        checkout = createCheckout(checkoutClass);
+
+        // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
-                "Test Author", Book.BookType.FICTION, 5);
-        book.setAvailableCopies(1);  // We are pretending it has been checked out by others and is not available anymore
+                "Test Author", Book.BookType.FICTION, 1);
 
         Patron patron = new Patron("P001", "Test Patron", "test@example.com",
                 Patron.PatronType.STUDENT);
+
+        checkout.addBook(book); // adding the book to the library
+        checkout.registerPatron(patron); // adding a patrol to the system
         patron.setFines(26.0);
 
         double result = patron.getFineBalance();
@@ -224,11 +244,17 @@ public class CheckoutBlackBoxSample {
      */
     @Test
     public void testBelowCheckoutLimit(){
-        //initialize
-        Book book = new Book("Test", 1);
-        Patron patron = new Patron("John");
-        patron.setOverdueCount(0);
+        checkout = createCheckout(checkoutClass);
 
+        // Setup: Create available book and eligible patron
+        Book book = new Book("978-0-123456-78-9", "Test Book",
+                "Test Author", Book.BookType.FICTION, 1);
+
+        Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                Patron.PatronType.STUDENT);
+
+        checkout.addBook(book); // adding the book to the library
+        checkout.registerPatron(patron); // adding a patrol to the system
         double result = checkout.checkoutBook(book, patron);
 
         assertEquals(4.0, result);
@@ -244,10 +270,17 @@ public class CheckoutBlackBoxSample {
      */
     @Test
     public void testCheckoutLimit(){
-        //initialize
-        Book book = new Book("Test", 1);
-        Patron patron = new Patron("John");
-        patron.setOverdueCount(5);
+        checkout = createCheckout(checkoutClass);
+
+        // Setup: Create available book and eligible patron
+        Book book = new Book("978-0-123456-78-9", "Test Book",
+                "Test Author", Book.BookType.FICTION, 1);
+
+        Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                Patron.PatronType.STUDENT);
+
+        checkout.addBook(book); // adding the book to the library
+        checkout.registerPatron(patron); // adding a patrol to the system
 
         double result = checkout.checkoutBook(book, patron);
 
