@@ -40,8 +40,8 @@ There is no required number of rows. Include enough rows to demonstrate systemat
 |-|-|-|-|-|-|
 |D1|Book availability|EP|Available; unavailable|Successful checkout when other conditions permit; rejection when no copy is available|Demonstrates how two input states form different behavioral groups|
 |D2|Patron Suspended|EP|Patron Eligible; Patron Suspended|Eligible Patron is allowed to proceed, suspended patron cannot complete checkout|Separates if a Patron is valid for borrowing or invalid<br />|
-|D3|Outstanding Fines|BVA|0.00 fine; fine below limit; fine at limit; fine above limit|Checkout allowed below limit; rejected for at or above limit|This tests if the fine threshold and its boundary|
-|D4|Number of Books Checked out|BVA|Below maximum (Faculty); exactly maximum (Faculty); above maximum (Faculty);<br />Below maximum (Staff); exactly maximum (Staff); above maximum (Staff); Below maximum (Student); exactly maximum (Student); above maximum (Student);<br />Below maximum (Public); exactly maximum (Public); above maximum (Public);<br />Below maximum (Child); exactly maximum (Child); above maximum (Child)|Checkout allowed below maximum; rejected when maximum reached or exceeded. (In all user-type cases) |Verification of the enforcement on borrowing limits of each user-type|
+|D3|Outstanding Fines|BVA|0.00 fine; fine below limit; fine at limit; fine above limit|Checkout allowed below limit; rejected for above limit|This tests if the fine threshold and its boundary|
+|D4|Number of Books Checked out|BVA|Below maximum; exactly maximum; above maximum<br />|Checkout allowed below maximum; rejected when maximum reached or exceeded. |Verification of the enforcement on borrowing limits of each user-type|
 |D5|Patron ID is valid|EP|Valid patronID; nonexistent or invalid patronID|Valid patronID processed; invalid patronID rejected|Confirms patron is valid before checkout processing|
 |D6|Successful Checkout|EP|Successful transaction|Available book count decreases; checked out record is created|Confirms correct observable state after successful checkout|
 |D7|Rejected Checkout|EP |Failed transaction due to any validation error|No copy count changes; no checked out record created|Ensures rejected checkout has no unintended side effects|
@@ -66,12 +66,12 @@ There is no fixed minimum number of test methods.
 |-|-|-|-|-:|-|
 |T1|`testBookAvailable`|D1|One available copy; registered eligible patron; no warnings|0.0|Available copies decrease by one; patron receives the book; checkout count becomes one|
 |T2|`testUnavailableBook`|D1|Available copies = 0; otherwise eligible registered patron|2.0|Book and patron remain unchanged|
-|T3|`testSuspendedPatron`|D2|Available copy >> 0; patron account suspended == true|1.0|No checkout created; book inventory unchanged|
+|T3|`testSuspendedPatron`|D2|Available copy >> 0; patron account suspended == true|1.0|No checkout log created; book inventory unchanged|
 |T4|`testFineBelowLimit`|D3|Available copy; patron fine below threshold|0.0|Book checked out successfully|
 |T5|`testFineAtLimit`|D3|Available copy; patron fine equal to threshold|3.0|Book checked out successfully|
 |T6|`testFineAboveLimit`|D3|Available copy; patron fine above threshold|3.0|No checkout; patron and book objects unchanged|
-|T7|`testBelowCheckoutLimit`|D4|Patron (Faculty, Staff, Student, Public, Child) currently holds at least one fewer book than maximum|0.0|Checkout succeeds; checkout count increases|
-|T8|`testAtCheckoutLimit`|D4|Patron (Faculty, Staff, Student, Public, Child) currently holds maximum allowed books|4.0|Checkout rejected; book inventory unchanged|
+|T7|`testBelowCheckoutLimit`|D4|Patron  currently holds at least one fewer books than maximum|0.0|Checkout succeeds; checkout count increases|
+|T8|`testAtCheckoutLimit`|D4|Patron currently holds maximum allowed books|4.0|Checkout rejected; book inventory unchanged|
 |T9|`testInvalidPatronID`|D5|Valid book; patronID not registered|1.0|No changes to book or patron records|
 |T10|`testSuccessfulCheckout`|D6|Book is available; Patron is valid; Patron isn't suspended; patron does not have outstanding fines|0.0|Inventory count, patron checkout history and checkout count changes|
 |T11|`testRejectedCheckout`|D7|Patron is suspended and attempts a checkout|1.0|No checkout record created; inventory left unchanged|
@@ -91,7 +91,10 @@ Severity guide:
 
 |Defect ID|Implementation(s)|Revealing Test ID(s)|Expected behavior|Observed behavior|Specification rule apparently violated|Consequence|Severity and justification|
 |-|-|-|-|-|-|-|-|
-|F1||||||||
+|F1|Checkout0|T1|Book should be unavailable after checkout and update inventory|Checkout succeeds, but the book remains available when it should no longer be available|Successful checkout must correctly update book availability and inventory|Inventory records will become inconsistent with actual book checkouts. Other patrons may be allowed to borrow books that should no longer be available|Major - library will provide books that are unavailable to continuously be checked out|
+|F2|Checkout1|T2|Patron will have book in checked-out list after checkout|Checkout succeeds, but the patron's checked-out list is not updated to reflect the new book|successful checkout must update patron borrowing records. |Patron account information is inaccurate and borrowing limits may not be correctly enforced|Major - inconsistency in patron records|
+|F3|Checkout2|T2|Checkout is rejected with return code 2.0 when no copies are available|The error code provided is  2.0 for the unavailable book when the expected outcome is 0.0|Books with no available copies must not be checked out|System allows a checkout of an unavailable book|Critical - violates a fundamental rule and allows unchecked borrowing|
+|||||||||
 
 ## Part 4: Comparative engineering judgment
 
@@ -101,10 +104,10 @@ Failure count is useful evidence, but it does not determine which implementation
 
 |Implementation|Distinct defects found|Highest severity|State corruption?|Prohibited operation allowed?|Overall assessment|
 |-|-:|-|-|-|-|
-|Checkout0||||||
-|Checkout1||||||
-|Checkout2||||||
-|Checkout3||||||
+|Checkout0|1|Major|Yes|no evidence|Functional but inventory state becomes incorrect after checkout|
+|Checkout1|1|Major|Yes|no evidence|functional but patron records become incorrect after checkout|
+|Checkout2|1|Critical|Yes|yes|unsafe because it allows invalid checkouts|
+|Checkout3|0|none observed|No|No|Best implementation based on current testing|
 
 ### Recommended implementation (150–250 words)
 
@@ -116,4 +119,10 @@ Select the implementation you consider best. Support your decision with specific
 4. one additional test that would increase confidence in your recommendation.
 
 **Your response:**
+
+
+
+**The implementation that is suggested to be the best on the above tests is Checkout3, as it did not throw any major or critical errors that Checkout0-2 provided. Checkout0 produces the risk of inventory state becoming incorrect after checkout, Checkout1 produces incorrect patron records and Checkout2 produces an unsafe environment because it allows invalid checkouts. Checkout3 did not have any of these risks or errors, but there was also very little information provided from the gradle tests for checkout3. 
+For the best implementation, I would personally fix the errors provided in Checkout0. Checkout0 requires a relook at the inventory of books after checkout, and in my opinion over reviewing the code, the Checkout and Book classes would be easy to update in order to approach the semantic errors. Fixing any major errors first and then working through critical errors would be the approach I would go about in fixing this inventory system. Failure count on Checkout0 provides the opportunity for what errors in the code could be corrected and retested, which provides a better outlook then Checkout3 which provided no distinct defaults. 
+An additional test I would provide would be adding a test for each different patron type (Faculty, Staff, Student, Public, Child) and ensuring each user type is being tested for proficiency of the inventory management and enforcing max checked out books. Testing all possible outcomes would create a more rounded black-box testing environment without deep diving into the white-box testing implementation.** 
 
