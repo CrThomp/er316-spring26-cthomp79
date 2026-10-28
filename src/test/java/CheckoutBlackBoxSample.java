@@ -2,7 +2,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
 import java.lang.reflect.Constructor;
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -125,5 +124,192 @@ public class CheckoutBlackBoxSample {
         // Verify: Patron should NOT have the book
         assertFalse(patron.hasBookCheckedOut(book.getIsbn()),
                 "Patron should NOT have book in list for " + checkoutClass.getSimpleName());
+    }
+    /**
+     *  This is an implementation of testSuspendedPatron()
+     *  This test will check that the available copy of the book is larger than 0
+     *  it will then check if the patron account is suspended
+     *  if the test is successful, meaning the patronID is suspended it will return
+     *  with the value of 1.0
+     *  No checkout log will be created; book inventory will be unchanged
+     */
+    @Test
+    public void testSuspendedPatron(){
+        //initialize book and patron
+        Book book = new Book("Test Book", 1);
+        Patron patron = new Patron("John");
+        patron.setAccountSuspended(true);
+
+        //attempt to checkout
+        double result = checkout.checkoutBook(book, patron);
+
+        //Assert
+        assertEquals(1.0, result);
+        assertEquals(1, book.getAvailableCopies());
+        assertFalse(patron.hasBookCheckedOut(book.getIsbn()));
+    }
+    /**
+     * `testFineBelowLimit`
+     * Available copy; patron fine below threshold
+     * expected outcome 0.0
+     * book checked out successfully
+     */
+    @Test
+    public void testFineBelowLimit(){
+        // Setup: Create unavailable book
+        Book book = new Book("978-0-123456-78-9", "Test Book",
+                "Test Author", Book.BookType.FICTION, 5);
+        book.setAvailableCopies(1);  // We are pretending it has been checked out by others and is not available anymore
+
+        Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                Patron.PatronType.STUDENT);
+        patron.setFines(0.0);
+
+        double result = patron.getFineBalance();
+
+        assertEquals(0.0, result);
+    }
+    /**
+     * `testFineAtLimit`
+     * Available copy; patron fine equal to threshold
+     * 3.0
+     * Book checked out successfully
+     */
+    @Test
+    public void testFineAtLimit() {
+        // Setup: Create unavailable book
+        Book book = new Book("978-0-123456-78-9", "Test Book",
+                "Test Author", Book.BookType.FICTION, 5);
+        book.setAvailableCopies(1);  // We are pretending it has been checked out by others and is not available anymore
+
+        Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                Patron.PatronType.STUDENT);
+        patron.setFines(25.0);
+
+        double result = patron.getFineBalance();
+
+        assertEquals(0.0, result);
+        assertEquals(25.0, result);
+    }
+
+    /**
+     * `testFineAboveLimit`
+     *  Available copy; patron fine above threshold
+     *  3.0
+     *  No checkout; patron and book objects unchanged
+     */
+    @Test
+    public void testFineAboveLimit() {
+        // Setup: Create unavailable book
+        Book book = new Book("978-0-123456-78-9", "Test Book",
+                "Test Author", Book.BookType.FICTION, 5);
+        book.setAvailableCopies(1);  // We are pretending it has been checked out by others and is not available anymore
+
+        Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                Patron.PatronType.STUDENT);
+        patron.setFines(26.0);
+
+        double result = patron.getFineBalance();
+
+        assertEquals(0.0, result);
+        assertEquals(26.0, result);
+    }
+
+    /**
+     * testBelowCheckoutLimit
+     * Patron (Faculty, Staff, Student, Public, Child)
+     * currently holds at least one fewer books than maximum
+     * 0.0
+     * Checkout succeeds; checkout count increases
+     */
+    @Test
+    public void testBelowCheckoutLimit(){
+        //initialize
+        Book book = new Book("Test", 1);
+        Patron patron = new Patron("John");
+        patron.setOverdueCount(0);
+
+        double result = checkout.checkoutBook(book, patron);
+
+        assertEquals(4.0, result);
+        assertEquals(1, book.getAvailableCopies());
+        assertEquals(0, patron.getOverdueCount());
+    }
+    /**
+     * testAtCheckoutLimit
+     * Patron (Faculty, Staff, Student, Public, Child) currently holds maximum allowed books
+     * 4.0
+     * Checkout rejected; book inventory unchanged
+     *
+     */
+    @Test
+    public void testCheckoutLimit(){
+        //initialize
+        Book book = new Book("Test", 1);
+        Patron patron = new Patron("John");
+        patron.setOverdueCount(5);
+
+        double result = checkout.checkoutBook(book, patron);
+
+        assertEquals(4.0, result);
+        assertEquals(1, book.getAvailableCopies());
+        assertEquals(5, patron.getOverdueCount());
+    }
+
+    /**
+     * testSuccessfulCheckout
+     * Book is available;
+     * Patron is valid; Patron isn't suspended; patron does not have outstanding fines
+     * 0.0
+     * Inventory count, patron checkout history and checkout count changes
+     */
+    @Test
+    public void testSuccessfulCheckout(){
+        checkout = createCheckout(checkoutClass);
+
+        // Setup: Create available book and eligible patron
+        Book book = new Book("978-0-123456-78-9", "Test Book",
+                "Test Author", Book.BookType.FICTION, 1);
+
+        Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                Patron.PatronType.STUDENT);
+
+        checkout.addBook(book); // adding the book to the library
+        checkout.registerPatron(patron); // adding a patrol to the system
+
+        // Execute checkout
+        double result = checkout.checkoutBook(book, patron);
+
+        assertEquals(1.0, result);
+        assertEquals(1, book.getAvailableCopies());
+        assertTrue(patron.hasBookCheckedOut(book.getIsbn()));
+    }
+
+    /**
+     * `testRejectedCheckout`
+     * Patron is suspended and attempts a checkout
+     * 1.0
+     * No checkout record created; inventory left unchanged
+     */
+    @Test
+    public void testRejectedCheckout(){
+        checkout = createCheckout(checkoutClass);
+
+        // Setup: Create available book and eligible patron
+        Book book = new Book("978-0-123456-78-9", "Test Book",
+                "Test Author", Book.BookType.FICTION, 1);
+
+        Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                Patron.PatronType.STUDENT);
+
+        checkout.addBook(book); // adding the book to the library
+        checkout.registerPatron(patron); // adding a patrol to the system
+
+        // Execute checkout
+        double result = checkout.checkoutBook(book, patron);
+
+        assertEquals(1.0, result);
+        assertEquals(1, book.getAvailableCopies());
+        assertFalse(patron.hasBookCheckedOut());
     }
 }
