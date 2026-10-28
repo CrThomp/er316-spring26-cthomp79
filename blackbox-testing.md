@@ -39,7 +39,14 @@ There is no required number of rows. Include enough rows to demonstrate systemat
 |Design ID|Condition|Technique|Values or partitions selected|Expected result or behavior|Why this condition matters|
 |-|-|-|-|-|-|
 |D1|Book availability|EP|Available; unavailable|Successful checkout when other conditions permit; rejection when no copy is available|Demonstrates how two input states form different behavioral groups|
-|D2||||||
+|D2|Patron Suspended|EP|Patron Eligible; Patron Suspended|Eligible Patron is allowed to proceed, suspended patron cannot complete checkout|Separates if a Patron is valid for borrowing or invalid<br />|
+|D3|Outstanding Fines|BVA|0.00 fine; fine below limit; fine at limit; fine above limit|Checkout allowed below limit; rejected for at or above limit|This tests if the fine threshold and its boundary|
+|D4|Number of Books Checked out|BVA|Below maximum (Faculty); exactly maximum (Faculty); above maximum (Faculty);<br />Below maximum (Staff); exactly maximum (Staff); above maximum (Staff); Below maximum (Student); exactly maximum (Student); above maximum (Student);<br />Below maximum (Public); exactly maximum (Public); above maximum (Public);<br />Below maximum (Child); exactly maximum (Child); above maximum (Child)|Checkout allowed below maximum; rejected when maximum reached or exceeded. (In all user-type cases) |Verification of the enforcement on borrowing limits of each user-type|
+|D5|Patron ID is valid|EP|Valid patronID; nonexistent or invalid patronID|Valid patronID processed; invalid patronID rejected|Confirms patron is valid before checkout processing|
+|D6|Successful Checkout|EP|Successful transaction|Available book count decreases; checked out record is created|Confirms correct observable state after successful checkout|
+|D7|Rejected Checkout|EP |Failed transaction due to any validation error|No copy count changes; no checked out record created|Ensures rejected checkout has no unintended side effects|
+
+## 
 
 ## Part 2: Test traceability
 
