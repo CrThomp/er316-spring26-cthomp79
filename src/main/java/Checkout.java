@@ -242,7 +242,7 @@ public class Checkout {
         if (typeString == null || expectedType == null) {
             return false;
         }
-
+        //CR Error return typeString.equals(expectedType.toString());
         return typeString == expectedType.toString();
     }
 
