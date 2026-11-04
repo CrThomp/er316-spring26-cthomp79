@@ -23,8 +23,8 @@ The findings, evidence, severity judgments, fixes, and traceability decisions be
 * **High:** major behavior is wrong or a common operation fails.
 * **Medium:** limited behavioral problem or meaningful maintenance risk.
 * **Low:** localized readability, consistency, or minor maintenance problem.
-
-
+  
+  
 
 ## Review findings
 
@@ -41,17 +41,20 @@ Record exactly four distinct findings. Include at least one CR, one MA, and one 
 
 Select two findings, including at least one CR finding. Each change should have its own GitHub issue and focused commit.
 
-| Defect ID | GitHub issue link | Fix commit hash/link | What changed |
-| --------- | ----------------- | -------------------- | ------------ |
-|           |                   |                      |              |
-|           |                   |                      |              |
+| Defect ID | GitHub issue link                                           | Fix commit hash/link                     | What changed                                                    |
+| --------- | ----------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| D1        | https://github.com/CrThomp/er316-spring26-cthomp79/issues/2 | c33cb603f1c95b0431cac8caf1998c750608935e | updated Book.java line 106 to fix the issue                     |
+| D2        | https://github.com/CrThomp/er316-spring26-cthomp79/issues/3 | 91bf41b1d039efe15b146294571b8bf29af90d46 | updated Checkout.java line 246 to correct comparison for String |
+| D3        | https://github.com/CrThomp/er316-spring26-cthomp79/issues/4 |                                          |                                                                 |
+| D4        | https://github.com/CrThomp/er316-spring26-cthomp79/issues/5 | adff7e354bed8c5e456198d590e34bea34d47cda | Condensed function for readability                              |
 
 ## Fix rationale
 
 For each fix, explain in one or two specific sentences why the change makes the codebase better.
 
-**Fix 1:** \[response]
+**Fix 1:** \Fixing D1 provides a more accurate inventory system. Returning books before allowed for an unintended consequence of up to 100 available copies to be recorded, regardless of the total copies of the book. This fix will allow and limit the available copies to the real inventory number of total copies. 
 
-**Fix 2:** \[response]
+**Fix 2:** \Fixing D2 allows for a more accurate comparison of the String object, not the reference to the object. This is important because it is comparing the type of Patron, which will limit and allow the patron to either checkout more or less books. This change supports a more functional inventory management system. 
 
-
+Fix 3: Fixing D3 will make the code more maintainable, for this exercise I did not resolve the issue but still set up the issue in github. Github is a wonderful tool I intend to familiarize myself with and am taking the opportunity to build additional cases to allow this growth.
+Fix 4:\Fixing D4 allows this code to be more readable. Having a return be a boolean statement over if/else brackets will help allow other developers to read the intentions of the function. This change will improve the understanding of the function and keep the code tidy. 
