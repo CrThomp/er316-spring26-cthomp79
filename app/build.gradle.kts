@@ -4,41 +4,58 @@
  * This generated file contains a sample Java application project to get you started.
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/8.14.6/userguide/building_java_projects.html in the Gradle documentation.
  * This project uses @Incubating APIs which are subject to change.
+ * Test this should have changed
  */
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
     application
+    java
+    jacoco
 }
 
 repositories {
-    // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
 
 dependencies {
-    // This dependency is used by the application.
-    implementation(libs.guava)
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
 }
 
-testing {
-    suites {
-        // Configure the built-in test suite
-        val test by getting(JvmTestSuite::class) {
-            // Use JUnit4 test framework
-            useJUnit("4.13.2")
-        }
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(18))
     }
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(18)
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.register<Test>("blackBoxTest") {
+    useJUnitPlatform()
+    include("**/CheckoutBlackBoxSample.class")
+}
+
+tasks.register<Test>("whiteBoxTest") {
+    useJUnitPlatform()
+    include("**/CheckoutWhiteBoxSample.class")
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
     }
 }
 
 application {
-    // Define the main class for the application.
-    mainClass = "org.example.App"
+    mainClass.set("org.example.App")
 }

@@ -28,20 +28,21 @@ tasks.test {
 
 tasks.register<Test>("blackBoxTest") {
     useJUnitPlatform()
-    include("**/CheckoutBlackBoxSample.class")
+    include("**/*BlackBox*.class")
 }
 
 tasks.register<Test>("whiteBoxTest") {
     useJUnitPlatform()
-    include("**/CheckoutWhiteBoxSample.class")
-}
-tasks.test {
-    useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
+    include("**/*WhiteBox*.class")
 }
 
-jacoco {
-    toolVersion = "0.8.12"
+tasks.test {
+    useJUnitPlatform()
+
+    // Run all tests
+    include("**/*.class")
+
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jacocoTestReport {
@@ -53,7 +54,6 @@ tasks.jacocoTestReport {
         csv.required.set(false)
     }
 }
-
 testing {
     suites {
         // Configure the built-in test suite

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * The parameterized structure allows testing all Checkout implementations
  * with the same tests to identify which implementations have bugs.
  */
-public class CheckoutBlackBoxSample {
+public class blackBoxTest {
 
     private Checkout checkout;
 
@@ -279,11 +279,13 @@ public class CheckoutBlackBoxSample {
         for(int i = 0; i < patron.getMaxCheckoutLimit(); i++) {
             patron.addCheckedOutBook("ISBN" + i, LocalDate.now());
         }
+        int originalCount = patron.getCheckoutCount();
         double result = checkout.checkoutBook(book, patron);
 
         assertEquals(3.2, result);
         assertEquals(1, book.getAvailableCopies());
-        assertEquals(5, patron.getOverdueCount());
+        assertFalse(patron.hasBookCheckedOut(book.getIsbn()));
+        assertEquals(originalCount, patron.getCheckoutCount());
     }
 
     /**
