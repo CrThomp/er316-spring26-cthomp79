@@ -120,7 +120,7 @@ The CFG, test design, tests, implementation, coverage interpretation, and reflec
 
 Embed your CFG image below. The graph must show entry/exit, executable statement groups, decision outcomes, loop entry/back/exit behavior, and the early return. Use current source line numbers or short statement labels consistently.
 
-![Control-flow graph for countBooksByType](file:///C:/Users/crhor/SER316Assignment2/student-version/student-version/CFG.png "CFG ")
+![Control-flow graph for countBooksByType](https://github.com/CrThomp/er316-spring26-cthomp79/blob/Whitebox/CFG.png?raw=true "CFG ")
 
 ### Node legend
 
