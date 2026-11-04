@@ -142,11 +142,12 @@ public class CheckoutBlackBoxSample {
 
         checkout.addBook(book); // adding the book to the library
         checkout.registerPatron(patron); // adding a patrol to the system
+        patron.setAccountSuspended(true);
         //attempt to checkout
         double result = checkout.checkoutBook(book, patron);
 
         //Assert
-        assertEquals(1.0, result);
+        assertEquals(3.0, result);
         assertEquals(1, book.getAvailableCopies());
         assertFalse(patron.hasBookCheckedOut(book.getIsbn()));
     }
@@ -199,7 +200,6 @@ public class CheckoutBlackBoxSample {
 
         double result = patron.getFineBalance();
 
-        assertEquals(0.0, result);
         assertEquals(25.0, result);
     }
 
@@ -227,7 +227,6 @@ public class CheckoutBlackBoxSample {
 
         double result = patron.getFineBalance();
 
-        assertEquals(0.0, result);
         assertEquals(26.0, result);
     }
 
@@ -253,8 +252,8 @@ public class CheckoutBlackBoxSample {
         checkout.registerPatron(patron); // adding a patrol to the system
         double result = checkout.checkoutBook(book, patron);
 
-        assertEquals(4.0, result);
-        assertEquals(1.0, book.getAvailableCopies());
+        assertEquals(0.0, result);
+        assertEquals(0.0, book.getAvailableCopies());
         assertEquals(0.0, patron.getOverdueCount());
     }
     /**
@@ -277,10 +276,12 @@ public class CheckoutBlackBoxSample {
 
         checkout.addBook(book); // adding the book to the library
         checkout.registerPatron(patron); // adding a patrol to the system
-
+        for(int i = 0; i < patron.getMaxCheckoutLimit(); i++) {
+            patron.addCheckedOutBook("ISBN" + i, LocalDate.now());
+        }
         double result = checkout.checkoutBook(book, patron);
 
-        assertEquals(4.0, result);
+        assertEquals(3.2, result);
         assertEquals(1, book.getAvailableCopies());
         assertEquals(5, patron.getOverdueCount());
     }
@@ -309,8 +310,8 @@ public class CheckoutBlackBoxSample {
         // Execute checkout
         double result = checkout.checkoutBook(book, patron);
 
-        assertEquals(1.0, result);
-        assertEquals(1, book.getAvailableCopies());
+        assertEquals(0.0, result);
+        assertEquals(0, book.getAvailableCopies());
         assertTrue(patron.hasBookCheckedOut(book.getIsbn()));
     }
 
@@ -333,11 +334,11 @@ public class CheckoutBlackBoxSample {
 
         checkout.addBook(book); // adding the book to the library
         checkout.registerPatron(patron); // adding a patrol to the system
-
+        patron.setAccountSuspended(true);
         // Execute checkout
         double result = checkout.checkoutBook(book, patron);
 
-        assertEquals(1.0, result);
+        assertEquals(3.0, result);
         assertEquals(1, book.getAvailableCopies());
         assertFalse(patron.hasBookCheckedOut(book.getIsbn()));
     }

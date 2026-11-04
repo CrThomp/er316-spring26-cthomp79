@@ -45,7 +45,7 @@ public class whiteBoxTest {
         assertEquals(1, result, "Should return 1 for one book matching");
     }
     @Test
-    @DisplayName("WB Test: countBooksByTypee - available books counted")
+    @DisplayName("WB Test: countBooksByType - available books counted")
     public void testCountBooksByType_Available(){
         Book book = new Book("1", "Book", "Author", Book.BookType.FICTION, 1);
         checkout.addBook(book);
@@ -69,5 +69,13 @@ public class whiteBoxTest {
         int result = checkout.countBooksByType(Book.BookType.FICTION, false);
         assertEquals(0, result, "Should return 0 for book types not matching counted");
     }
-
+    @Test
+    @DisplayName("WB Test: five loop iterations")
+    public void testCountBooksByType_FiveIterations(){
+        for(int i = 0; i < 5; i++){
+            checkout.addBook(new Book("ISBN" + i, "Title" + i, "Author", Book.BookType.FICTION, 1));
+        }
+        int result = checkout.countBooksByType(Book.BookType.FICTION, false);
+        assertEquals(5, result);
+    }
 }
