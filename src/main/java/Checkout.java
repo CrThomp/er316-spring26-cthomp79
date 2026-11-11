@@ -35,12 +35,22 @@ public class Checkout {
         }
     }
 
+    /**
+     *
+     *  This is a builder to implement a new checkout Object
+     *
+     */
     public Checkout() {
         this.bookList = new HashMap<>();
         this.patrons = new HashMap<>();
         this.history = new ArrayList<>();
     }
 
+    /**
+     * This method will take in passing a Book object
+     * and add that book object to the bookList.
+     * @param book
+     */
     public void addBook(Book book) {
         bookList.put(book.getIsbn(), book);
     }

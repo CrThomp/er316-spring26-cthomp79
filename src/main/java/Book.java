@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a book in the library system.
@@ -140,6 +138,8 @@ public class Book {
 
     @Override
     public String toString() {
-        return "Book[isbn=" + isbn + ",title=" + title + ",author=" + author + ",type=" + type + ",availableCopies=" + availableCopies + "/" + totalCopies + "]";
+        return "Book[isbn=" + isbn + ",title=" +
+                title + ",author=" + author + ",type=" + type + ",availableCopies=" +
+                availableCopies + "/" + totalCopies + "]";
     }
 }
