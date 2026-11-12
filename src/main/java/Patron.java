@@ -115,27 +115,44 @@ public class Patron {
      * @return Loan period in days
      */
     public int getLoanPeriodDays() {
-        if(type==PatronType.FACULTY)return 60;
-        else if(type==PatronType.STAFF)return 45;
-        else if(type==PatronType.STUDENT)return 30;
-        else if(type==PatronType.PUBLIC)return 21;
-        else if(type==PatronType.CHILD)return 14;
+        if(type == PatronType.FACULTY)return 60;
+        else if(type == PatronType.STAFF)return 45;
+        else if(type == PatronType.STUDENT)return 30;
+        else if(type == PatronType.PUBLIC)return 21;
+        else if(type == PatronType.CHILD)return 14;
         else return 21;
     }
 
+    /**
+     * resetFines is a method to reset the fines to 0
+     */
     public void resetFines() {
         this.fines = 0.0;
     }
 
+    /**
+     * chkSuspended will return the boolean of
+     * if the Patron is currently suspended
+     * @return
+     */
     public boolean chkSuspended() {
         return this.suspended;
     }
 
+    /**
+     * Setter method to set an account to suspended
+     * @param suspended
+     */
     // Setters
     public void setAccountSuspended(boolean suspended) {
         this.suspended = suspended;
     }
 
+    /**
+     * Setter to set the current overdue count to
+     * parameter int
+     * @param count
+     */
     public void setOverdueCount(int count) {
         this.overdue = count;
     }
@@ -218,6 +235,8 @@ public class Patron {
 
     @Override
     public String toString() {
-        return patronId+"-"+name+"("+type+")"+"[Books:"+bookMap.size()+"/"+getMaxCheckoutLimit()+",Fines:$"+ fines +"]";
+        return patronId + "-" + name + "("+type+")" +
+                "[Books:"+bookMap.size() + "/" +
+                getMaxCheckoutLimit() + ",Fines:$" + fines +"]";
     }
 }

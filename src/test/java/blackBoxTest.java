@@ -5,7 +5,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.lang.reflect.Constructor;
 import java.time.LocalDate;
 import java.util.stream.Stream;
-
+import org.junit.jupiter.api.Test;
+//import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -30,19 +31,14 @@ public class blackBoxTest {
      * Each test will run against ALL implementations.
      */
     @SuppressWarnings("unchecked")
-    static Stream<Class<? extends Checkout>> checkoutClassProvider() {
-        return (Stream<Class<? extends Checkout>>) Stream.of(
-                Checkout0.class,
-                Checkout1.class,
-                Checkout2.class,
-                Checkout3.class
-        );
-    }
+    //static Stream<Class<? extends Checkout>> checkoutClassProvider() {
+    //   return Stream.of(Checkout.class);
+    // }
 
     // Uncomment when you implement the method in assign 3 and comment the above
-//    static Stream<Class<? extends Checkout>> checkoutClassProvider() {
-//        return Stream.of(Checkout.class);
-//    }
+    static Stream<Class<? extends Checkout>> checkoutClassProvider() {
+        return Stream.of(Checkout.class);
+    }
 
 
     /**
@@ -61,8 +57,8 @@ public class blackBoxTest {
     @MethodSource("checkoutClassProvider")
     @DisplayName("T1: Successful checkout - available book, eligible patron")
     public void testBookAvailable(Class<? extends Checkout> checkoutClass) throws Exception {
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout(); //testing this to fix compilation error
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -101,8 +97,8 @@ public class blackBoxTest {
     @MethodSource("checkoutClassProvider")
     @DisplayName("T2: Unavailable book returns error code 2.0")
     public void testUnavailableBook(Class<? extends Checkout> checkoutClass) throws Exception {
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create unavailable book
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 5);
@@ -122,8 +118,8 @@ public class blackBoxTest {
                 "Expected error code 2.0 for unavailable book for " + checkoutClass.getSimpleName());
 
         // Verify: Patron should NOT have the book
-        assertFalse(patron.hasBookCheckedOut(book.getIsbn()),
-                "Patron should NOT have book in list for " + checkoutClass.getSimpleName());
+        assertFalse(patron.hasBookCheckedOut(book.getIsbn()));
+        new StringBuilder().append("Patron should NOT have book in list for ").append(checkoutClass.getSimpleName()).toString();
     }
     /**
      *  This is an implementation of testSuspendedPatron()
@@ -135,8 +131,8 @@ public class blackBoxTest {
      */
     @Test
     public void testSuspendedPatron(){
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -146,11 +142,12 @@ public class blackBoxTest {
 
         checkout.addBook(book); // adding the book to the library
         checkout.registerPatron(patron); // adding a patrol to the system
+        patron.setAccountSuspended(true);
         //attempt to checkout
         double result = checkout.checkoutBook(book, patron);
 
         //Assert
-        assertEquals(1.0, result);
+        assertEquals(3.0, result);
         assertEquals(1, book.getAvailableCopies());
         assertFalse(patron.hasBookCheckedOut(book.getIsbn()));
     }
@@ -162,8 +159,8 @@ public class blackBoxTest {
      */
     @Test
     public void testFineBelowLimit(){
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -188,8 +185,8 @@ public class blackBoxTest {
     @Test
     public void testFineAtLimit() {
         // Setup: Create unavailable book
-        checkout = createCheckout(checkoutClass);
-
+        // checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -203,7 +200,6 @@ public class blackBoxTest {
 
         double result = patron.getFineBalance();
 
-        assertEquals(0.0, result);
         assertEquals(25.0, result);
     }
 
@@ -216,8 +212,8 @@ public class blackBoxTest {
     @Test
     public void testFineAboveLimit() {
         // Setup: Create unavailable book
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -231,7 +227,6 @@ public class blackBoxTest {
 
         double result = patron.getFineBalance();
 
-        assertEquals(0.0, result);
         assertEquals(26.0, result);
     }
 
@@ -244,8 +239,8 @@ public class blackBoxTest {
      */
     @Test
     public void testBelowCheckoutLimit(){
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -257,9 +252,9 @@ public class blackBoxTest {
         checkout.registerPatron(patron); // adding a patrol to the system
         double result = checkout.checkoutBook(book, patron);
 
-        assertEquals(4.0, result);
-        assertEquals(1, book.getAvailableCopies());
-        assertEquals(0, patron.getOverdueCount());
+        assertEquals(0.0, result);
+        assertEquals(0.0, book.getAvailableCopies());
+        assertEquals(0.0, patron.getOverdueCount());
     }
     /**
      * testAtCheckoutLimit
@@ -270,8 +265,8 @@ public class blackBoxTest {
      */
     @Test
     public void testCheckoutLimit(){
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -281,12 +276,16 @@ public class blackBoxTest {
 
         checkout.addBook(book); // adding the book to the library
         checkout.registerPatron(patron); // adding a patrol to the system
-
+        for(int i = 0; i < patron.getMaxCheckoutLimit(); i++) {
+            patron.addCheckedOutBook("ISBN" + i, LocalDate.now());
+        }
+        int originalCount = patron.getCheckoutCount();
         double result = checkout.checkoutBook(book, patron);
 
-        assertEquals(4.0, result);
+        assertEquals(3.2, result);
         assertEquals(1, book.getAvailableCopies());
-        assertEquals(5, patron.getOverdueCount());
+        assertFalse(patron.hasBookCheckedOut(book.getIsbn()));
+        assertEquals(originalCount, patron.getCheckoutCount());
     }
 
     /**
@@ -298,8 +297,8 @@ public class blackBoxTest {
      */
     @Test
     public void testSuccessfulCheckout(){
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -313,8 +312,8 @@ public class blackBoxTest {
         // Execute checkout
         double result = checkout.checkoutBook(book, patron);
 
-        assertEquals(1.0, result);
-        assertEquals(1, book.getAvailableCopies());
+        assertEquals(0.0, result);
+        assertEquals(0, book.getAvailableCopies());
         assertTrue(patron.hasBookCheckedOut(book.getIsbn()));
     }
 
@@ -326,8 +325,8 @@ public class blackBoxTest {
      */
     @Test
     public void testRejectedCheckout(){
-        checkout = createCheckout(checkoutClass);
-
+        //checkout = createCheckout(checkoutClass);
+        checkout = new Checkout();
         // Setup: Create available book and eligible patron
         Book book = new Book("978-0-123456-78-9", "Test Book",
                 "Test Author", Book.BookType.FICTION, 1);
@@ -337,13 +336,12 @@ public class blackBoxTest {
 
         checkout.addBook(book); // adding the book to the library
         checkout.registerPatron(patron); // adding a patrol to the system
-
+        patron.setAccountSuspended(true);
         // Execute checkout
         double result = checkout.checkoutBook(book, patron);
 
-        assertEquals(1.0, result);
+        assertEquals(3.0, result);
         assertEquals(1, book.getAvailableCopies());
-        assertFalse(patron.hasBookCheckedOut());
+        assertFalse(patron.hasBookCheckedOut(book.getIsbn()));
     }
 }
-

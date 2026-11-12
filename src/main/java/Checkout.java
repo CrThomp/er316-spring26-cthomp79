@@ -35,12 +35,22 @@ public class Checkout {
         }
     }
 
+    /**
+     *
+     *  This is a builder to implement a new checkout Object
+     *
+     */
     public Checkout() {
         this.bookList = new HashMap<>();
         this.patrons = new HashMap<>();
         this.history = new ArrayList<>();
     }
 
+    /**
+     * This method will take in passing a Book object
+     * and add that book object to the bookList.
+     * @param book
+     */
     public void addBook(Book book) {
         bookList.put(book.getIsbn(), book);
     }
@@ -141,7 +151,58 @@ public class Checkout {
      */
     public double checkoutBook(Book book, Patron patron) {
 //        Implement me in Assignment 3
-        // Normal success
+        //2.1 - Book is null
+        if(book == null){
+            return 2.1;
+        }
+        //3.0 - Patron account is suspended
+        if(validatePatronEligibility(patron) == 3.0){
+            return 3.0;
+        }
+        //3.1 - Patron is null
+        if(validatePatronEligibility(patron) == 3.1){
+            return 3.1;
+        }
+        //5.0 - Book is reference-only (cannot be checked out)
+        if(book.isReferenceOnly()){
+            return 5.0;
+        }
+        // 0.1 - Success, renewal (patron already had this book, renewal sets the due date to (today + patron.getLoanPeriodDays()).)
+        if(patron.hasBookCheckedOut(book.getIsbn())){
+            LocalDate dueDate = LocalDate.now().plusDays(patron.getLoanPeriodDays());
+            patron.addCheckedOutBook(book.getIsbn(), dueDate);
+            return 0.1;
+        }
+        //2.0 - Book unavailable (all copies checked out)
+        if (!book.isAvailable()){ return 2.0;}
+        // 3.2 - Patron at maximum checkout limit (FACULTY=20, STAFF=15, STUDENT=10, PUBLIC=5, CHILD=3)
+        if(patron.getCheckoutCount() >= patron.getMaxCheckoutLimit()){
+            return 3.2;
+        }
+        //4.0 - Patron has 3 or more overdue books
+        if(validatePatronEligibility(patron) == 4.0){
+            return 4.0;
+        }
+        //4.1 - Patron has $10.00 or more in unpaid fines
+        if(validatePatronEligibility(patron) == 4.1){
+            return 4.1;
+        }
+        LocalDate today = LocalDate.now();
+        LocalDate dueDate = today.plusDays(patron.getLoanPeriodDays());
+        patron.addCheckedOutBook(book.getIsbn(), dueDate);
+        book.checkout();
+        //1.0 - Success with warning (patron has 1-2 overdue books)
+        history.add(new Transaction(patron, book, today, dueDate));
+        if(patron.getOverdueCount() >= 1 && patron.getOverdueCount() <= 2){
+            return 1.0;
+        }
+        //1.1 - Success with warning (patron within 2 of max checkout limit after this checkout)
+        //Max limits: FACULTY=20 (e.g. warning at 18, 19, 20 including current checkout), STAFF=15, STUDENT=10, PUBLIC
+        int remaining = patron.getMaxCheckoutLimit() - patron.getCheckoutCount();
+        if(remaining <= 2){
+            return 1.1;
+        }
+        //0.0 - Success, book checked out normally
         return 0.0;
     }
 
@@ -242,7 +303,11 @@ public class Checkout {
         if (typeString == null || expectedType == null) {
             return false;
         }
+<<<<<<< HEAD
         //CR Error return typeString.equals(expectedType.toString());
+=======
+
+>>>>>>> StaticAnalysis
         return typeString.equals(expectedType.toString());
     }
 

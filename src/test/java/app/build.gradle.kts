@@ -9,6 +9,8 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+	java
+	jacoco
 }
 
 repositories {
@@ -18,15 +20,46 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation(libs.guava)
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+}
+tasks.test {
+    useJUnitPlatform()
 }
 
+tasks.register<Test>("blackBoxTest") {
+    useJUnitPlatform()
+    include("**/*BlackBox*.class")
+}
+
+tasks.register<Test>("whiteBoxTest") {
+    useJUnitPlatform()
+    include("**/*WhiteBox*.class")
+}
+
+tasks.test {
+    useJUnitPlatform()
+
+    // Run all tests
+    include("**/*.class")
+
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
+    }
+}
 testing {
     suites {
         // Configure the built-in test suite
         val test by getting(JvmTestSuite::class) {
-            // Use JUnit4 test framework
-            useJUnit("4.13.2")
+            // Use JUnit Jupiter test framework
+            useJUnitJupiter("5.12.1")
         }
     }
 }
