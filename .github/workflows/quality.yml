@@ -49,7 +49,7 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
       - name: Add the checkout
-	uses: actions/checkout@v4
+	run: actions/checkout@v4
       - name: Java setup
 	uses: actions/setup-java@v4
 	with:
