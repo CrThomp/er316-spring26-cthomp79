@@ -303,11 +303,7 @@ public class Checkout {
         if (typeString == null || expectedType == null) {
             return false;
         }
-<<<<<<< HEAD
-        //CR Error return typeString.equals(expectedType.toString());
-=======
 
->>>>>>> StaticAnalysis
         return typeString.equals(expectedType.toString());
     }
 
