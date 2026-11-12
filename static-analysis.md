@@ -86,12 +86,12 @@ Use one row per finding you investigated in `Checkout.java`. For SpotBugs, inclu
 
 Provide information from your final run. Build and Test must pass. Static Analysis must run and upload its reports, but it may still report a failed job.
 
-**Run URL:** [CI quality checks · CrThomp/er316-spring26-cthomp79@a3b39e7](https://github.com/CrThomp/er316-spring26-cthomp79/actions/runs/43289200639)
-**Commit:**  a3b39e7
+**Run URL:** [[Updated static-analysis.md · CrThomp/er316-spring26-cthomp79@ebfcaa2](https://github.com/CrThomp/er316-spring26-cthomp79/actions/runs/43307935199)](https://github.com/CrThomp/er316-spring26-cthomp79/actions/runs/43289200639)
+**Commit:**  ebfcaa2
 **Jobs that ran:** Build and Test, Static Analysis, Add checkout, Set up Java, Gradle permission
 **Which jobs passed, which failed, and why?**
 
-All jobs passed, the static analysis job passed with the implemented changes from task 2. 
+All jobs passed, the static analysis job passed with the implemented changes from task 2.  I had to solve all conflicts between branches before the CI quality checks could all pass. 
 
 
 
@@ -99,7 +99,8 @@ All jobs passed, the static analysis job passed with the implemented changes fro
 
 Provide a short summary of how you merged the branches and what problems or conflicts you encountered.
 
-First I switched to the Blackbox branch, from Blackbox I created the Dev branch. From Dev I merged review and cleared any errors/committed changes and pushed to origin. I then merged StaticAnalysis to Dev. I ran ./gradlew clean test as instructed before merging Dev into main and pushing it to the repository.
+First I switched to the Blackbox branch, from Blackbox I created the Dev branch. From Dev I merged review and cleared any errors/committed changes and pushed to origin. I then merged StaticAnalysis to Dev. I ran ./gradlew clean test as instructed before merging Dev into main and pushing it to the repository. 
+What I thought had been a simple task ended up creating issues with the above part. I was running the quality.yml from the main branch, and upon going to submit the assingment noticed this issue. I had accidentally done a majority of the development in main and needed to make the necessary changes for the CI quality checks to be on the Dev branch. I ended up having to take the Dev branch to a version of main and then continue to resolve conflicts, I am unsure if I was successful, but that is why the commit titles/times are different as compared to the final tasks. I will definitely be checking git bash on every change to ensure I am on the right branch future going. 
 
 
 
