@@ -26,12 +26,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: temurin
           cache: gradle
+
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
@@ -48,15 +50,19 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew test
+
       - name: Add the checkout
-	run: actions/checkout@v4
-      - name: Java setup
-	uses: actions/setup-java@v4
-	with:
-	   distribution: temurin
-	   java-version: '18'
-      - name: Gradle permission
-	run: ./gradlew
+	uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: gradle
+
+      - name: Make Gradle permission
+        run: chmod +x gradlew
 
       # TODO 3: Upload the test report with actions/upload-artifact@v4 (you will need to research how to do that).
       # Apply if: always() so a failed test job still uploads its report.
@@ -71,16 +77,18 @@ jobs:
     name: Static analysis
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        run: actions/checkout@v4
-      - name: Java setup
-	uses: actions/setup-java@v4
-	with:
-	  distribution: temurin
-	  java-version: '18'
+      - name: Add the checkout
+	uses: actions/checkout@v4
 
-      - name: Gradle permission
-	run: ./gradlew
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: gradle
+
+      - name: Make Gradle permission
+        run: chmod +x gradlew
 
       # TODO 4: Add the checkout, Java setup, and Gradle permission steps.
 
