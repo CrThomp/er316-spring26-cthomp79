@@ -1,21 +1,17 @@
+
 name: CI quality checks
 
-# This starter already runs on StaticAnalysis. Push it first and inspect the
-# successful Build job before completing the remaining TODOs.
 on:
   workflow_dispatch:
   push:
     branches:
       - StaticAnalysis
-      # TODO 1: Add the integrated development branch.
       - Dev
   pull_request:
     branches:
       - StaticAnalysis
-      # TODO 1: Add the integrated development branch here as well.
       - Dev
 
-# The workflow only needs to read repository contents.
 permissions:
   contents: read
 
@@ -37,7 +33,6 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
-      # `assemble` compiles and packages the project without running verification tasks.
       - name: Compile and assemble
         run: ./gradlew assemble
 
@@ -45,14 +40,8 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      # TODO 2: Add the checkout, Java setup, and Gradle permission steps.
-      # Jobs use separate runners, so this job cannot reuse the build job's files.
-
-      - name: Run unit tests
-        run: ./gradlew test
-
       - name: Add checkout
-	uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -64,21 +53,23 @@ jobs:
       - name: Make Gradle permission
         run: chmod +x gradlew
 
-      # TODO 3: Upload the test report with actions/upload-artifact@v4 (you will need to research how to do that).
-      # Apply if: always() so a failed test job still uploads its report.
+      - name: Run unit tests
+        run: ./gradlew test
+
       - name: Upload test report
-	if: always()
-	uses: actions/upload-artifact@v4
-	with:
-	  name: test-report
-	  path: app/build/reports/tests/test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test/
+          if-no-files-found: warn
 
   static-analysis:
     name: Static analysis
     runs-on: ubuntu-latest
     steps:
-      - name: Add the checkout
-	uses: actions/checkout@v4
+      - name: Add checkout
+        uses: actions/checkout@v6
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -90,28 +81,19 @@ jobs:
       - name: Make Gradle permission
         run: chmod +x gradlew
 
-      # TODO 4: Add the checkout, Java setup, and Gradle permission steps.
-
-      # TODO 5: Add separate steps for Checkstyle and SpotBugs. Use:
-      #   ./gradlew checkstyleMain
-      #   ./gradlew spotbugsMain -PstaticAnalysis=true
-      # Apply if: always() to the SpotBugs step so it still runs and produces a
-      # report when Checkstyle finds enough remaining violations to fail its step.
       - name: Run Checkstyle
-	run: ./gradlew checkstyleMain
+        run: ./gradlew checkstyleMain
 
       - name: Run SpotBugs
-	if: always()
-	run: ./gradlew spotbugsMain -PstaticAnalysis=true
-      # TODO 6: Upload build/reports/checkstyle/ and build/reports/spotbugs/
-      # with actions/upload-artifact@v4. Apply if: always(), choose a distinct
-      # artifact name, and use if-no-files-found: warn. Remove the placeholder
-      # step after completing this job.
+        if: always()
+        run: ./gradlew spotbugsMain -PstaticAnalysis=true
+
       - name: Upload Static Analysis Reports
-	run: actions/upload-artifact@v4
-	with:
-	   name: static-analysis-reports
-		path: |
-		   build/reports/checkstyle/
-		   build/reports/spotbugs/
-	   if-no-files-found: warn
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-analysis-reports
+          path: |
+            build/reports/checkstyle/
+            build/reports/spotbugs/
+          if-no-files-found: warn
