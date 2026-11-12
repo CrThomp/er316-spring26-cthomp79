@@ -51,7 +51,7 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
 
-      - name: Add the checkout
+      - name: Add checkout
 	uses: actions/checkout@v4
 
       - name: Set up Java
