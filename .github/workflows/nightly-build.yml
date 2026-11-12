@@ -53,12 +53,13 @@ jobs:
 
   package:
     name: Package verified application
-    # TODO 2: Use `needs` so this job runs only after the test job succeeds.
+    # TODO 2: Wait for tests to succeed.
     needs: test
     runs-on: ubuntu-latest
     steps:
+      # TODO 3: Set up a fresh runner.
       - name: Checkout
-        uses: actions/checkout@V6
+        uses: actions/checkout@v6
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -70,23 +71,14 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
-      - name: Create Ddistribution ZIP
+      - name: Create distribution ZIP
         run: ./gradlew distZip
 
-      # TODO 3: Repeat the checkout, Java 21, and Gradle permission setup on
-      # this job's fresh runner. Then run ./gradlew distZip to create a runnable
-      # distribution ZIP.
-
-      # TODO 4: Upload build/distributions/*.zip with
-      # actions/upload-artifact@v4. Choose a descriptive artifact name, include
-      # if: success(), and use if-no-files-found: error. Remove the placeholder
-      # step after completing this job.
-       - name: Upload Application Distribution
-         if: success()
-         uses: actionsupload-artifact@v4
-         with:
-           name: verified-application-distribution
-           path: build/distributions/*.zip
-           if-no-files-found: error
-         
-        uses: actions/setup-java@v5
+      # TODO 4: Upload the distribution ZIP.
+      - name: Upload application distribution
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-application-distribution
+          path: build/distributions/*.zip
+          if-no-files-found: error
