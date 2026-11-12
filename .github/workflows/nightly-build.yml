@@ -1,9 +1,11 @@
-name: Verified application build
+gname: Verified application build
 
 on:
   workflow_dispatch:
 
   # EXTRA CREDIT: Add a temporary schedule here if required.
+  schedule:
+    - cron: '2-59/5 * * * *'
 
 permissions:
   contents: read
