@@ -8,10 +8,12 @@ on:
     branches:
       - StaticAnalysis
       # TODO 1: Add the integrated development branch.
+      - Dev
   pull_request:
     branches:
       - StaticAnalysis
       # TODO 1: Add the integrated development branch here as well.
+      - Dev
 
 # The workflow only needs to read repository contents.
 permissions:
@@ -46,16 +48,39 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew test
+      - name: Add the checkout
+	uses: actions/checkout@v4
+      - name: Java setup
+	uses: actions/setup-java@v4
+	with:
+	   distribution: temurin
+	   java-version: '18'
+      - name: Gradle permission
+	run: ./gradlew
 
       # TODO 3: Upload the test report with actions/upload-artifact@v4 (you will need to research how to do that).
       # Apply if: always() so a failed test job still uploads its report.
+      - name: Upload test report
+	if: always()
+	uses: actions/upload-artifact@v4
+	with:
+	  name: test-report
+	  path: app/build/reports/tests/test
 
   static-analysis:
     name: Static analysis
     runs-on: ubuntu-latest
     steps:
-      - name: Static-analysis TODO placeholder
-        run: echo "Replace this placeholder while completing TODOs 4-6."
+      - name: Checkout
+        run: actions/checkout@v4
+      - name: Java setup
+	uses: actions/setup-java@v4
+	with:
+	  distribution: temurin
+	  java-version: '18'
+
+      - name: Gradle permission
+	run: ./gradlew
 
       # TODO 4: Add the checkout, Java setup, and Gradle permission steps.
 
@@ -64,8 +89,21 @@ jobs:
       #   ./gradlew spotbugsMain -PstaticAnalysis=true
       # Apply if: always() to the SpotBugs step so it still runs and produces a
       # report when Checkstyle finds enough remaining violations to fail its step.
+      - name: Run Checkstyle
+	run: ./gradlew checkstyleMain
 
+      - name: Run SpotBugs
+	if: always()
+	run: ./gradlew spotbugsMain -PstaticAnalysis=true
       # TODO 6: Upload build/reports/checkstyle/ and build/reports/spotbugs/
       # with actions/upload-artifact@v4. Apply if: always(), choose a distinct
       # artifact name, and use if-no-files-found: warn. Remove the placeholder
       # step after completing this job.
+      - name: Upload Static Analysis Reports
+	run: actions/upload-artifact@v4
+	with:
+	   name: static-analysis-reports
+		path: |
+		   build/reports/checkstyle/
+		   build/reports/spotbugs/
+	   if-no-files-found: warn
