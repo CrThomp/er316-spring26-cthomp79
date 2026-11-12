@@ -1,6 +1,8 @@
 
 name: CI quality checks
 
+# This starter already runs on StaticAnalysis. Push it first and inspect the
+# successful Build job before completing the remaining TODOs.
 on:
   workflow_dispatch:
   push:
@@ -40,22 +42,24 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Add checkout
+      # TODO 2: Checkout, Java setup, and Gradle permission.
+      - name: Add the checkout
         uses: actions/checkout@v6
 
-      - name: Set up Java
+      - name: Java setup
         uses: actions/setup-java@v5
         with:
-          java-version: '21'
           distribution: temurin
+          java-version: '21'
           cache: gradle
 
-      - name: Make Gradle permission
-        run: chmod +x gradlew
+      - name: Gradle permission
+        run: chmod +x ./gradlew
 
       - name: Run unit tests
         run: ./gradlew test
 
+      # TODO 3: Upload test report.
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,19 +72,21 @@ jobs:
     name: Static analysis
     runs-on: ubuntu-latest
     steps:
-      - name: Add checkout
+      # TODO 4: Checkout, Java setup, and Gradle permission.
+      - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Set up Java
+      - name: Java setup
         uses: actions/setup-java@v5
         with:
-          java-version: '21'
           distribution: temurin
+          java-version: '21'
           cache: gradle
 
-      - name: Make Gradle permission
-        run: chmod +x gradlew
+      - name: Gradle permission
+        run: chmod +x ./gradlew
 
+      # TODO 5: Checkstyle and SpotBugs.
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain
 
@@ -88,6 +94,7 @@ jobs:
         if: always()
         run: ./gradlew spotbugsMain -PstaticAnalysis=true
 
+      # TODO 6: Upload static analysis reports.
       - name: Upload Static Analysis Reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -97,4 +104,3 @@ jobs:
             build/reports/checkstyle/
             build/reports/spotbugs/
           if-no-files-found: warn
-#test
