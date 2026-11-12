@@ -123,19 +123,36 @@ public class Patron {
         else return 21;
     }
 
+    /**
+     * resetFines is a method to reset the fines to 0
+     */
     public void resetFines() {
         this.fines = 0.0;
     }
 
+    /**
+     * chkSuspended will return the boolean of
+     * if the Patron is currently suspended
+     * @return
+     */
     public boolean chkSuspended() {
         return this.suspended;
     }
 
+    /**
+     * Setter method to set an account to suspended
+     * @param suspended
+     */
     // Setters
     public void setAccountSuspended(boolean suspended) {
         this.suspended = suspended;
     }
 
+    /**
+     * Setter to set the current overdue count to
+     * parameter int
+     * @param count
+     */
     public void setOverdueCount(int count) {
         this.overdue = count;
     }
